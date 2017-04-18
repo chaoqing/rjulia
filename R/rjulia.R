@@ -113,6 +113,9 @@ r2j <- r_julia <- function(x,y)
     na = lapply(x, is.na)
     if (is.null(names(x))) {
       names(x) = as.character(seq_len(length(x)))
+    } else if (any(grepl('\\.',names(x)))){
+	    warning("the names of x contain '.', automatically converted to '_'")
+	    names(x) <- sub('\\.','_',names(x))
     }
     invisible(.Call("R_Julia_NA_DataFrame", x, na, y, PACKAGE="rjulia"))
   } else if (is.factor(x)) {
