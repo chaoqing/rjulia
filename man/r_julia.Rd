@@ -4,11 +4,11 @@
 \title{Send R Objects to Julia}
 \description{
   Send \R object \code{x} to julia, i.e., translate it to a corresponding julia
-  object, and store that as \code{y}.
+  object, and store that as \code{y}. Different from \code{r_julia}, \code{r2j} can handle more than one object and set \code{y} to the expression name if not provided.
 }
 \usage{
 r_julia(x, y)  # or shorter
-    r2j(x, y)
+    r2j(y=x)
 }
 \arguments{
   \item{x}{an \R object.  Currently must fulfill certain properties to
@@ -27,23 +27,23 @@ r_julia(x, y)  # or shorter
 }
 \examples{
 ## assign R's pi to Julia, as "Rpi"
-r2j(pi, "Rpi")
+r2j(Rpi=pi)
 j2r("pi") # Julia's builtin pi
 ## is there a difference
 j2r("Rpi - pi") # typically 0
 
 ## integer vector:
-r2j(1:10, "i10")
+r2j(i10=1:10)
 j2r("i10") ; stopifnot(identical(1:10, j2r("i10")))
 
 ## matrix, passed to Julia and got back
 m <- matrix(exp(-5:6), 3,4)
-r2j(m, "m")
+r2j(m)
 stopifnot(identical(m, j2r("m")))
 
 ## complex -- not yet _FIXME_
 z <- complex(modulus = 4, argument = pi*(0:16)/8)
-r2j(z, "z") # does *not* work ! but gives no error
+r2j(z) # does *not* work ! but gives no error
 if(FALSE)
   stopifnot(identical(z, j2r("z")))
 try( j2r( "z" ) )# ->  "... undefined"

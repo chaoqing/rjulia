@@ -8,16 +8,16 @@
   Evaluate Julia code from \R, or simply get a Julia variable into \R.
 
   Whereas \code{j2r()} is currently \emph{identical} to
-  \code{julia_eval()},
+  \code{julia_eval()} except it handle R expression,
   \code{julia_void_eval()} will evaluate code in the running julia
   process \emph{without} returning a value.
 }
 \usage{
 j2r        (expression) # short for
-julia_eval (expression)
+julia_eval ("expression")
 
 jDo            (expression) # short for
-julia_void_eval(expression)
+julia_void_eval("expression")
 }
 \arguments{
   \item{expression}{a \code{\link{character}} string.}

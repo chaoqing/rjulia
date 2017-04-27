@@ -45,7 +45,7 @@ ccall<-function(fname,cmdstr)
   }
 }
 
-jDo<-julia_void_eval<-julia_eval<-function(cmdstr) {
+julia_void_eval<-function(cmdstr) {
   .julia_init_if_necessary()
                                         #first clear julia exception
   ccall("jl_eval_string",'ccall(:jl_exception_clear,Void,());')
@@ -59,6 +59,15 @@ jDo<-julia_void_eval<-julia_eval<-function(cmdstr) {
             println("");
             ccall(:jl_exception_clear,Void,());
        end')
+}
+
+jDo <- function(...){
+  expr <- as.list(substitute(list(...)))[-1L]
+  code <- sapply(expr, function(e){
+    paste(deparse(e), collapse = '')
+  })
+  code <- paste(names(expr), ifelse(names(expr) == '', '', '='), code, sep='')
+  invisible(lapply(code, julia_void_eval))
 }
 
 Init<-julia_init <- function(juliahome="")
@@ -90,14 +99,28 @@ Init<-julia_init <- function(juliahome="")
 
 ########## End: from rjulia2
 
-j2r <- julia_eval <- function(expression)
+julia_eval <- function(expression)
 {
   .julia_init_if_necessary()
   ## Evaluate the expression and return the results of that evaluation.
   .Call("jl_eval", expression, PACKAGE="rjulia")
 }
 
-r2j <- r_julia <- function(x,y)
+j2r <- function(...){
+  expr <- as.list(substitute(list(...)))[-1L]
+  code <- sapply(expr, function(e){
+    paste(deparse(e), collapse = '')
+  })
+  code <- paste(names(expr), ifelse(names(expr) == '', '', '='), code, sep='')
+  result <- lapply(code, julia_eval)
+  if(length(result)==1){
+  	result <- result[[1]]
+  }
+
+  result
+}
+
+r_julia <- function(x,y)
 {
   .julia_init_if_necessary()
 
@@ -123,6 +146,21 @@ r2j <- r_julia <- function(x,y)
   } else {
     warning("rjulia supports only vector, matrix, array, list(withoug NAs), factor and data frames (with simple string, int, float, logical) classes")
   }
+}
+
+r2j <- function(...)
+{
+  vars <- list(...)
+  varnames <- names(vars)
+  if(is.null(varnames) || any(varnames=='')){
+    if(is.null(varnames)) varnames <- rep('', times=length(vars))
+    varnames[varnames==''] <- sapply(
+      as.list(substitute(list(...)))[c(FALSE,varnames=='')],deparse)
+  }
+  
+  invisible( sapply(seq_along(varnames), 
+           function(i){ r_julia(vars[[i]], varnames[i]) }
+	   ))
 }
 
 jdfinited <- julia_DataArrayFrameInited <- function()
