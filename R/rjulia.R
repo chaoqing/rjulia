@@ -146,6 +146,9 @@ r_julia <- function(x,y)
   } else {
     warning("rjulia supports only vector, matrix, array, list(withoug NAs), factor and data frames (with simple string, int, float, logical) classes")
   }
+
+  # We reduce all length-1 vector/list as single element object
+  invisible(julia_void_eval(paste0('if isa(',y,',AbstractArray) && length(',y,')==1; ',y,'=',y,'[1] ;end')))
 }
 
 r2j <- function(...)
