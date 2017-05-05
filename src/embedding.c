@@ -69,10 +69,9 @@ SEXP jl_void_eval(SEXP cmd)
 }
 
 //eval julia script and return
-SEXP jl_eval(SEXP cmd)
+SEXP jl_eval_(char* s)
 {
-  const char *s = CHAR(asChar(cmd));
-  jl_value_t *ret = jl_eval_string((char *)s);
+  jl_value_t *ret = jl_eval_string(s);
   if (jl_exception_occurred())
   {
     jl_show(jl_stderr_obj(), jl_exception_occurred());
@@ -81,6 +80,12 @@ SEXP jl_eval(SEXP cmd)
     return R_NilValue;
   }
   return Julia_R(ret);
+}
+
+SEXP jl_eval(SEXP cmd)
+{
+  const char *s = CHAR(asChar(cmd));
+  return jl_eval_((char *) s);
 }
 
 #ifdef __cplusplus

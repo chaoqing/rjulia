@@ -66,6 +66,8 @@ jDo <- function(...){
   code <- sapply(expr, function(e){
     paste(deparse(e), collapse = '')
   })
+  # or simpler
+  #sapply(match.call(expand.dots=TRUE)[-1], deparse)
   code <- paste(names(expr), ifelse(names(expr) == '', '', '='), code, sep='')
   invisible(lapply(code, julia_void_eval))
 }

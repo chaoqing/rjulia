@@ -574,6 +574,7 @@ static SEXP Julia_R_MD_NA_DataFrame(jl_value_t *Var)
   return ans;
 }
 
+/*SEXP jl_eval_(char* s); // Need this to convert all unrecognized type */
 //Convert Julia Type To R,Real interface
 SEXP Julia_R(jl_value_t *Var)
 {
@@ -620,5 +621,11 @@ SEXP Julia_R(jl_value_t *Var)
   else
       PROTECT(ans = Julia_R_Scalar(Var));
   UNPROTECT(1);
+
+  /*if(R_NilValue==ans)*/
+  /*{*/
+      /*const char* s="string(ans)";*/
+      /*return jl_eval_((char *) s);*/
+  /*}*/
   return ans;
 }
